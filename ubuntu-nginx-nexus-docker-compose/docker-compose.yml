@@ -1,0 +1,12 @@
+version: '3'
+services:
+     ubuntu-nginx:
+             build:
+                context: .
+                dockerfile: Dockerfile
+             container_name: ubuntu-nginx
+             image: ubuntu-nginx:v1.1
+             ports:
+                - "9090:80"
+                - "9091:8081" 
+             tty: true

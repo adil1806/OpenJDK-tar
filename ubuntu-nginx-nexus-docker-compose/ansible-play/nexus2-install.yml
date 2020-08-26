@@ -1,0 +1,32 @@
+---
+- hosts: localhost
+  become: true
+  gather_facts: false
+  vars:
+    Download_folder: /opt
+    mode: 0775
+    nexus_version: 2.14.18-01
+    nexus_url: http://www.sonatype.org/downloads/nexus-{{nexus_version}}-bundle.zip
+    nexus_url: https://download.sonatype.com/nexus/oss/nexus-{{nexus_version}}-bundle.zip
+    untar_src: /opt/nexus-{{nexus_version}}-bundle.zip
+  tasks:
+   - name: Download the Nexus file.
+     get_url:
+       url: "{{nexus_url}}"
+       dest: "{{Download_folder}}"
+       force_basic_auth: yes
+       mode: "{{ mode }}"
+
+   - name: Unzipping it.
+     unarchive:
+       src: /opt/nexus-{{nexus_version}}-bundle.zip
+       dest: /opt
+       remote_src: yes 
+
+   - name: Renaming nexus folder
+     shell: mv /opt/nexus-{{nexus_version}} /opt/nexus
+       
+   - name: Remove Nexus Archive
+     file:
+        path: "{{Download_folder}}/nexus-{{nexus_version}}-bundle.zip"
+        state: absent  

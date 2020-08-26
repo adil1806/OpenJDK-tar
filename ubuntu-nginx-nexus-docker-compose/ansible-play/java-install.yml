@@ -1,0 +1,66 @@
+---
+- hosts: localhost
+  become: true
+  gather_facts: false
+  vars:
+     version: "1.8.0_261"
+     user: "root"
+     install_path: "/{{ user }}/jdk"
+     mode: "0775"
+     unarchive_src: "/{{ user }}/jdk/jdk-8u261-linux-x64.tar.gz"
+     link_name: "java.latest"
+  tasks:
+
+     - name: Creating jdk directory
+       file:
+         path: "{{ install_path }}/jdk"
+         state: directory
+         owner: "{{ user }}"
+         group: "{{ user }}"
+         mode: "{{ mode }}"
+         recurse: yes
+
+     - name: Downloading Java {{ version }} tar file
+       shell:  curl -u admin:123 -X GET http://18.220.18.3:8081/repository/OpenJDK/jdk-8u261-linux-x64.tar.gz -O
+       args:
+          chdir: "{{ install_path }}"
+
+     - name: Untar java {{ version }}
+       unarchive:
+          src: "{{ unarchive_src}}"
+          dest: "{{ install_path}}"
+          remote_src: yes
+          owner: "{{ user }}"
+          group: "{{ user }}"
+          mode: "{{ mode }}"
+
+     - name: Creating Symlink {{ install_path }}/jdk-{{ version }} --> {{ install_path }}/{{ link_name }}
+       file:
+         src: "{{ install_path }}/jdk{{ version }}"
+         dest: "{{ install_path }}/{{ link_name }}"
+         owner: "{{ user }}"
+         group: "{{ user }}"
+         mode: "{{ mode }}"
+         state: link
+         force: yes
+
+     - name: set JAVA_home in bash profile
+       lineinfile:
+               path: "/{{ user }}/.bashrc"
+               regexp: "{{ item.exp }}"
+               line: "{{ item.line }}"
+               owner: "{{ user }}"
+               group: "{{ user }}"
+       with_items:
+         - { exp: '^export JAVA_HOME=' , line:  "export JAVA_HOME={{ install_path }}/{{ link_name }}" }
+         - { exp: 'export PATH=$JAVA_HOME' , line: "export PATH=$JAVA_HOME/bin:$PATH" } 
+
+     - name: checking java version post upgrade
+       shell: . "/{{ user }}/.bashrc" && java -version
+       register: jdk_version
+       tags:
+         - version
+
+     - debug: var=jdk_version.stderr_lines
+       tags:
+          - version
