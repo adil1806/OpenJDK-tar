@@ -1,0 +1,9 @@
+version: '3.3'
+services:
+   sample1:
+       image: 'nginx:latest'
+       ports:
+         - "9090:80"
+   sample2:
+       image: 'ubuntu'
+

@@ -1,0 +1,101 @@
+
+
+																Docker Service Command
+
+To see about service:
+
+######################### docker service ls ##################################
+ubuntu@master:~$ docker service ls
+ID                  NAME                MODE                REPLICAS            IMAGE               PORTS
+13w21d6218yd        web                 replicated          1/1                 nginx:latest        *:80->80/tcp
+
+Using filter for servcies:
+ubuntu@master:~$ docker service ls --filter name=web
+ID                  NAME                MODE                REPLICAS            IMAGE               PORTS
+13w21d6218yd        web                 replicated          3/3                 nginx:latest        *:80->80/tcp
+
+for getting only servcie ID
+ubuntu@master:~$ docker service ls -q
+13w21d6218yd
+##############################################################################
+
+############################ docker servcie ps #################################
+
+To see containers of service:
+ubuntu@master:~$ docker service ps web
+ID                  NAME                IMAGE               NODE                DESIRED STATE       CURRENT STATE            ERROR               PORTS
+jf80kqj7gbbx        web.1               nginx:latest        worker01            Running             Running 2 minutes ago             
+kw0hq8ws5x1e        web.2               nginx:latest        worker01            Running             Running 2 minutes ago             
+ipj35msrwd2w        web.3               nginx:latest        master              Running             Running 2 minutes ago             
+
+To get only task id of servcies:
+ubuntu@master:~$ docker service ps web -q
+jf80kqj7gbbxcmsigh3u63j1i
+kw0hq8ws5x1enr9le6chvv7sz
+ipj35msrwd2w3623d6w36qsn4
+
+To get containers of servcie using filter:
+ubuntu@master:~$ docker service ps web --filter node=worker01
+ID                  NAME                IMAGE               NODE                DESIRED STATE       CURRENT STATE             ERROR               PORTS
+jf80kqj7gbbx        web.1               nginx:latest        worker01            Running             Running 14 minutes ago            
+kw0hq8ws5x1e        web.2               nginx:latest        worker01            Running             Running 14 minutes ago            
+
+##################################################################################
+
+####################### docker servcie create ###################################
+
+Swarm service: 
+docker service create  --name mynginx --replicas 2 -p 80:80 nginx
+
+
+To scale up services:
+docker service scale <servcie-ID>=9 	[9=replicas]
+
+
+
+##################################################################################
+
+######################### docker servcie rm ##########################################
+
+To remove service:
+docker service rm web
+
+#################################################################################
+
+##################### docker servcie update ##########################################
+
+To add port to running services
+ubuntu@master:~$ docker service update --publish-add published=8080,target=80 web
+
+To remove port from ruuning service
+ubuntu@master:~$ docker service update --publish-rm published=80,target=80 web
+
+To update image of running service:
+ubuntu@master:~$ docker service update --image <image name>
+
+currently having nginx:latest
+ubuntu@master:~$ docker service ls
+ID                  NAME                MODE                REPLICAS            IMAGE               PORTS
+s6oymh4k7hbm        stack1_sample1      replicated          1/1                 nginx:latest        *:9090->80/tcp
+jnhhnssvos0q        stack1_sample2      replicated          0/1                 ubuntu:latest
+
+update images to 
+docker service update --image bitnami/nginx-ingress-controller stack1_sample1
+
+It became:
+ubuntu@master:~$ docker service ls
+ID                  NAME                MODE                REPLICAS            IMAGE                                     PORTS
+s6oymh4k7hbm        stack1_sample1      replicated          0/1                 bitnami/nginx-ingress-controller:latest   *:9090->80/tcp
+jnhhnssvos0q        stack1_sample2      replicated          0/1                 ubuntu:latest
+
+Now rolling back to last step:
+ubuntu@master:~$ docker service update --rollback=1 stack1_sample1
+stack1_sample1
+rollback: manually requested rollback
+overall progress: rolling back update: 1 out of 1 tasks
+1/1: running   [>                                                  ]
+verify: Service converged
+
+
+
+###################################################################################

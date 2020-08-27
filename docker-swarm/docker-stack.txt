@@ -1,0 +1,57 @@
+
+
+												Docker Stack
+												
+############################## docker stack deploy ########################
+
+
+################### docker stack deploy ###################################
+
+ubuntu@master:~$ docker stack deploy -c docker-compose.yml stack2
+Creating network stack2_default
+Creating service stack2_sample2
+Creating service stack2_sample1
+
+###########################################################################
+
+########################## docker stack ls ###############################
+To see stask 
+ubuntu@master:~$ docker stack ls
+NAME                SERVICES            ORCHESTRATOR
+stack1              2                   Swarm
+stack2              1                   Swarm
+
+To see stack of swarm orchestrator( swarm | kubernates| all)
+
+ubuntu@master:~$ docker stack  ls --orchestrator  swarm
+NAME                SERVICES            ORCHESTRATOR
+stack1              2                   Swarm
+stack2              1                   Swarm
+
+###########################################################################
+
+################## dcoker stack services ###############################
+In stack 1 : 2 services ruuning lets check
+ubuntu@master:~$ docker stack services stack1
+ID                  NAME                MODE                REPLICAS            IMAGE               PORTS
+jnhhnssvos0q        stack1_sample2      replicated          0/1                 ubuntu:latest
+s6oymh4k7hbm        stack1_sample1      replicated          1/1                 nginx:latest        *:9090->80/tcp
+
+###############################################################################
+
+
+###################### docker stack ps #####################################
+See stack container:
+ubuntu@master:~$ docker stack ps stack1
+ID                  NAME                   IMAGE                                     NODE                DESIRED STATE       CURRENT STATE            ERROR               PORTS
+npjn2qfhg5q0        stack1_sample2.1       ubuntu:latest                             master              Ready               Ready 1 second ago
+6qqjtsu0oduq        stack1_sample1.1       nginx:latest                              master              Running             Running 4 minutes ago
+
+
+to see container of stack of swarm orchestrator
+ubuntu@master:~$ docker stack ps --orchestrator=swarm stack1
+ID                  NAME                   IMAGE                                     NODE                DESIRED STATE       CURRENT STATE                     ERROR               PORTS
+nl7niz9s6uf9        stack1_sample2.1       ubuntu:latest                             worker01            Running             Starting less than a second ago
+6qqjtsu0oduq        stack1_sample1.1       nginx:latest                              master              Running             Running 12 minutes ago
+
+##################################################################################

@@ -1,0 +1,32 @@
+
+
+Docker Init
+
+To enable the docker swarm:
+docker swarm init --advertise-addr <manager mode ip>
+
+SWMKEY-1-lxUKkULXI2BdE3CXC4ky36xQkP0N5SVz7UiuKFVEZx0
+
+To lock docker swarm:
+
+For running docker swarm:
+docker swarm update --autolock=true
+
+for newly creating swarm:
+docker swarm init --autolock=true
+
+restart docker service:
+sudo service docker restart
+
+you dont be able to use docker unless you unlock it
+
+To unlock it:
+docker swarm unlock
+enter key which generated while locking
+
+Generating key
+ubuntu@master:~$ docker swarm join-token worker
+To add a worker to this swarm, run the following command:
+
+docker swarm join --token SWMTKN-1-5eq6rad67vcw0q5wr1d2afxtbcq73y2b6wnjov6yvl69q28wr9-965vwdalret79tuwxacobnpqp 52.14.70.42:2377
+

@@ -1,0 +1,89 @@
+ssh -i "devopss-tech.pem" ubuntu@ec2-18-220-18-3.us-east-2.compute.amazonaws.com
+
+https://download.oracle.com/otn/java/jdk/8u261-b12/a4634525489241b9a9e1aa73d9e118e6/jdk-8u261-linux-x64.tar.gz
+
+
+
+														docker swarm
+
+docker swarm join --token SWMTKN-1-0fffmhd6rddvkyq14uwqv8v6y4x8euqdsaetyoz6q79u20rwi9-08s0eqkc8p9qp9g95tu7yh594 18.221.152.155:2377
+
+To generate token:
+generate token docker swarm join-token worker/manager
+
+from docker master server to worker:
+ssh ubuntu@13.59.61.57
+
+
+		Docker node command
+docker node:
+- ls
+
+show total nodes present in cluster and its status:
+
+ubuntu@master:~$ docker node ls
+ID                            HOSTNAME            STATUS              AVAILABILITY        MANAGER STATUS      ENGINE VERSION
+uapb3afxj9na6tpexc17s47hk *   master              Ready               Active              Leader              19.03.12
+ju5h70nxpg99kfj7szlbj7qav     worker01            Ready               Active                                  19.03.12
+
+- ps
+show services running on node( bydefault shows master service details)
+
+ubuntu@master:~$ docker node ps
+ID                  NAME                IMAGE               NODE                DESIRED STATE       CURRENT STATE            ERROR               PORTS
+tpotyr5offoh        mynginx.2           nginx:latest        master              Running             Running 29 minutes ago           
+
+To see service ruunning on cluster node:
+
+ubuntu@master:~$ docker node ps worker01
+ID                  NAME                IMAGE               NODE                DESIRED STATE       CURRENT STATE            ERROR               PORTS
+wvlnxu4ahchr        mynginx.1           nginx:latest        worker01            Running             Running 30 minutes ago            
+
+- rm
+To remove nodes from cluster:
+
+ubuntu@master:~$ docker node rm worker01 ....
+
+- promote
+To promote worker node to manager
+ubuntu@master:~$ docker node promote worker01
+Node worker01 promoted to a manager in the swarm.
+
+ubuntu@master:~$ docker node ls
+ID                            HOSTNAME            STATUS              AVAILABILITY        MANAGER STATUS      ENGINE VERSION
+uapb3afxj9na6tpexc17s47hk *   master              Ready               Active              Leader              19.03.12
+ju5h70nxpg99kfj7szlbj7qav     worker01            Ready               Active              Reachable           19.03.12
+
+now worker01 manager status showing reachable
+
+- demote
+To demote node from manager to worker:
+
+ubuntu@master:~$ docker node demote worker01
+Manager worker01 demoted in the swarm.
+Manager status of worker01 node change
+
+ubuntu@master:~$ docker node ls
+ID                            HOSTNAME            STATUS              AVAILABILITY        MANAGER STATUS      ENGINE VERSION
+uapb3afxj9na6tpexc17s47hk *   master              Ready               Active              Leader              19.03.12
+ju5h70nxpg99kfj7szlbj7qav     worker01            Ready               Active                                  19.03.12
+
+
+
+- inspect
+Shows details of worker node
+ubuntu@master:~$ docker node  inspect  self --> for manager node
+
+ubuntu@master:~$ docker node  inspect  worker01 --> for worker node
+
+- update
+Update the worker node
+
+docker node update --availability drain worker01dock	
+docker node update --availability active worker01
+
+
+
+
+
+
