@@ -1,18 +1,8 @@
-ssh -i "devopss-tech.pem" ubuntu@ec2-18-220-18-3.us-east-2.compute.amazonaws.com
 
-https://download.oracle.com/otn/java/jdk/8u261-b12/a4634525489241b9a9e1aa73d9e118e6/jdk-8u261-linux-x64.tar.gz
-
-
-
-														docker swarm
-
-docker swarm join --token SWMTKN-1-0fffmhd6rddvkyq14uwqv8v6y4x8euqdsaetyoz6q79u20rwi9-08s0eqkc8p9qp9g95tu7yh594 18.221.152.155:2377
+									docker swarm
 
 To generate token:
 generate token docker swarm join-token worker/manager
-
-from docker master server to worker:
-ssh ubuntu@13.59.61.57
 
 
 		Docker node command
