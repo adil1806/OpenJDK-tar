@@ -1,0 +1,75 @@
+
+#################################### OPENJDK #########################################################
+Install  OpenJDK1.8
+sudo apt-get install openjdk-8-jre -y
+
+#######################################################################################################
+
+####################################### NEXUS 3 ######################################################
+Now install nexus3
+go to /opt/ :
+cd /opt/
+
+donwload nexus file:
+wget https://sonatype-download.global.ssl.fastly.net/repository/downloads-prod-group/3/nexus-3.26.1-02-unix.tar.gz
+
+untar it:
+tar xvf https://sonatype-download.global.ssl.fastly.net/repository/downloads-prod-group/3/nexus-3.26.1-02-unix.tar.gz
+
+rename it:
+mv nexus-3.26.1-02-unix.tar.gz nexus3
+
+now make nexus to run as service:
+
+add NEXUS_HOME in ~/.bashrc:
+vim ~/.bashrc
+NEXUS_HOME=/opt/nexus3/
+
+edit nexus.rc:
+vim /opt/nexus3/nexus.rc
+add:
+    run_as_user="<YOUR_USERNAME"
+
+Create symlink:
+sudo ln -s $NEXUS_HOME/bin/nexus /etc/init.d/nexus
+
+RUN:
+cd /etc/init.d
+sudo update-rc.d nexus defaults
+sudo service nexus start
+
+#################################################################################################################
+
+########################################### Adding repo in nexus as docker private registry ##############################################
+add repository in nexus
+take type as docker hosted
+HTTPS port <any> in my case 8090
+check: Allow clients to use the V1 API to interact with this repository
+check: Validate that all content uploaded to this repository is of a MIME type appropriate for the repository format
+save...!!!!
+
+##################################################################################################################
+
+#################################### add one file in /etc/docker/ ###########################################
+
+sudo vim /etc/docker/daemon.json
+add this:
+	{
+    "insecure-registries": ["<YOUR_NEUXS_IP:HTTPS_PORT_WHILE_CREATING_REPO"] 
+	}
+	
+	eg: port 8090
+restart nexus
+
+sudo service nexus restart
+###################################################################################################################
+
+####################################### now login to private registry using docker ############################
+
+docker login <YOUR_NEUXS_IP:HTTPS_PORT_WHILE_CREATING_REPO> -u <USERNAME> -p <PASSWORD>
+
+after that pull any images
+docker pull alpine
+tag it:
+docker tag alpine:latest <YOUR_NEUXS_IP:HTTPS_PORT_WHILE_CREATING_REPO>/alpine:v1
+docker push <YOUR_NEUXS_IP:HTTPS_PORT_WHILE_CREATING_REPO>/alpine:v1
