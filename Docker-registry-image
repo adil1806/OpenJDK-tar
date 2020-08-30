@@ -1,0 +1,13 @@
+docker run -d -p 5000:5000 --privileged --restart=always --name s3-registry \
+-v /auth:/data:ro \
+-e REGISTRY_STORAGE=s3 \
+-e REGISTRY_STORAGE_S3_REGION=eu-west-1 \
+-e REGISTRY_STORAGE_S3_BUCKET=docker-demo-s3 \
+-e REGISTRY_STORAGE_S3_ENCRYPT=false \
+-e REGISTRY_STORAGE_S3_SECURE=true \
+-e REGISTRY_STORAGE_S3_V4AUTH=true \
+-e REGISTRY_STORAGE_S3_CHUNKSIZE=5242880 \
+-e REGISTRY_STORAGE_S3_ROOTDIRECTORY=/image-custom-registry \
+-e "REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm" \
+-e REGISTRY_AUTH_HTPASSWD_PATH=/data/htpasswd \
+registry:2
