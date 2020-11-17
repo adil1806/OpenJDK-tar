@@ -22,6 +22,6 @@ spec:
     spec:
      containers:
        - name: nginx-containers
-         image: mak1806/tc:v2
+         image: mak1806/tc:v3
          ports:
           - containerPort: 80
