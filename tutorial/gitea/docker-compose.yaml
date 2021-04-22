@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:5.7
+    container_name: mysql
+    restart: always
+    secrets:
+       - "db-rootpassword"
+       - "db-userpassword"
+    environment:
+       - "MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db-rootpassword"
+       - "MYSQL_USER=gitea"
+       - "MYSQL_PASSWORD_FILE=/run/secrets/db-userpassword"
+       - "MYSQL_DATABASE=gitea"
+    networks:
+       - gitea
+    volumes:
+       - mysql_vol:/var/lib/mysql
+
+  gitea:
+    image: gitea/gitea:latest
+    container_name: gitea
+    restart: always
+    networks:
+       - gitea
+    volumes:
+       - gitea_vol:/data
+       - /etc/timezone:/etc/timezone:ro
+       - /etc/localtime:/etc/localtime:ro
+    ports:
+       - "3000:3000"
+       - "222:22"
+    depends_on:
+       - mysql
+    environment:
+       - "GITEA__database__TYPE=mysql"
+       - "GITEA__database__HOST=mysql:3306"
+       - "GITEA__database__NAME=gitea"
+       - "GITEA__database__USER=gitea"
+       - "GITEA__database__PASSWORD=gitea"
+networks:
+ gitea:
+   external: false
+volumes:
+   gitea_vol:
+   mysql_vol:
+secrets:
+   db-rootpassword:
+       file: cred/mysqlroot.txt
+   db-userpassword:
+       file: cred/mysqluser.txt

@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+     mongodb:
+         image: mongo:4.2.13
+         volumes:
+            - mongodb:/data/db
+         restart: always
+         container_name: mongodb
+         environment:
+              MONGO_INITDB_ROOT_USERNAME: adil
+              MONGO_INITDB_ROOT_PASSWORD: admin
+     mongoexpress:
+           depends_on:
+               - mongodb
+           image: mongo-express
+           container_name: mongoexpress
+           ports:
+            - "8090:8081"
+           restart: always
+           environment:
+               ME_CONFIG_MONGODB_SERVER: mongodb
+               ME_CONFIG_MONGODB_ADMINUSERNAME: adil
+               ME_CONFIG_MONGODB_ADMINPASSWORD: admin
+volumes:
+    mongodb: {}
